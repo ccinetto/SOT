@@ -1,58 +1,37 @@
-import { uuid } from 'uuidv4';
 import { LibroI, newLibroI } from '../models/libros/libros.interfaces';
-
+import {
+  LibrosFactory,
+  TipoPersitencia,
+} from '../models/libros/libros.factory';
 class Libro {
-  private libros: LibroI[] = [
-    {
-      _id: '1234',
-      nombre: 'game of thrones',
-      precio: 2000,
-    },
-    {
-      _id: '12',
-      nombre: 'el señor de los anillos',
-      precio: 20,
-    },
-    {
-      _id: '123',
-      nombre: 'harry poter',
-      precio: 2000,
-    },
-  ];
+  private libros;
+  private tipo;
+
+  constructor() {
+    this.tipo = TipoPersitencia.MYSQL;
+    this.libros = LibrosFactory.get(this.tipo);
+  }
 
   async getLibros(id: string | undefined = undefined): Promise<LibroI[]> {
-    if (id) return this.libros.filter((unLibro) => unLibro._id === id);
+    if (id) return this.libros.getLibros(id);
 
-    return this.libros;
+    return this.libros.getLibros();
   }
 
   async crearLibro(data: newLibroI): Promise<LibroI> {
-    const newLibro = {
-      _id: uuid(),
-      ...data,
-    };
-
-    this.libros.push(newLibro);
+    const newLibro = await this.libros.crearLibro(data);
 
     return newLibro;
   }
 
   async actualizarLibro(id: string, data: newLibroI): Promise<LibroI> {
-    const indice = this.libros.findIndex((unLibro) => unLibro._id === id);
-    console.log(`Indice ==> ${indice}`);
+    const newLibro = await this.libros.actualizarLibro(id, data);
 
-    const oldLibro = this.libros[indice];
-
-    const newLibro = Object.assign(oldLibro, data);
-
-    this.libros.splice(indice, 1, newLibro);
-
-    return oldLibro;
+    return newLibro;
   }
 
   async borrarLibro(id: string): Promise<void> {
-    const indice = this.libros.findIndex((unLibro) => unLibro._id === id);
-    this.libros.splice(indice, 1);
+    await this.libros.borrarLibro(id);
   }
 }
 
