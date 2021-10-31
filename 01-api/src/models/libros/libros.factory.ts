@@ -1,9 +1,11 @@
 import ApiLibroMem from './DAO/memory';
-import ApiLibroMySQL from './DAO/mysql';
+import ApiLibroSQL from './DAO/mysql';
+import ApiLibrosMongo from './DAO/mongo';
 
 export enum TipoPersitencia {
   Memoria = 'MEM',
   MYSQL = 'MYSQL',
+  MONGO = 'MONGO',
 }
 
 export class LibrosFactory {
@@ -14,8 +16,12 @@ export class LibrosFactory {
         return new ApiLibroMem();
 
       case TipoPersitencia.MYSQL:
-        console.log('Retornando Instancia Clase Mem');
-        return new ApiLibroMySQL();
+        console.log('Retornando Instancia Clase SQL');
+        return new ApiLibroSQL();
+
+      case TipoPersitencia.MONGO:
+        console.log('Retornando Instancia Clase SQL');
+        return new ApiLibrosMongo();
 
       default:
         return new ApiLibroMem();

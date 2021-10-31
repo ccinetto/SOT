@@ -1,21 +1,33 @@
+import Config from '../config';
 import knex, { Knex } from 'knex';
+import { LibroI, newLibroI } from '../models/libros/libros.interfaces';
 
 const config = {
-  client: 'mysql2',
-  connection: {
-    host: '127.0.0.1',
-    user: 'miusuarionuevo',
-    password: '12345678',
-    database: 'sot',
+  dev: {
+    client: 'sqlite3',
+    connection: { filename: './mydbsqlite3' },
+    useNullAsDefault: true,
   },
-  pool: { min: 0, max: 7 },
+  stg: {
+    client: 'mysql2',
+    connection: {
+      host: '127.0.0.1',
+      user: Config.MYSQL_USERNAME,
+      password: Config.MYSQL_PASSWORD,
+      database: 'sot',
+    },
+    pool: { min: 0, max: 7 },
+  },
 };
 
+type ambiente = 'dev' | 'stg';
 class DB {
   private connection: Knex;
+  private environment: ambiente;
 
   constructor() {
-    this.connection = knex(config);
+    this.environment = Config.MYSQL_ENV as ambiente;
+    this.connection = knex(config[this.environment]);
   }
 
   async initDb() {
@@ -35,6 +47,29 @@ class DB {
     if (id) return this.connection(tableName).where({ _id: id });
 
     return this.connection(tableName);
+  }
+
+  async create(tableName: string, data: LibroI): Promise<LibroI> {
+    await this.connection(tableName).insert(data);
+
+    const register = await this.connection(tableName).where({ _id: data._id });
+
+    return register[0];
+  }
+
+  async update(
+    tableName: string,
+    id: string,
+    data: newLibroI
+  ): Promise<LibroI> {
+    await this.connection(tableName).where({ _id: id }).update(data);
+    const register = await this.connection(tableName).where({ _id: id });
+
+    return register[0];
+  }
+
+  async delete(tableName: string, id: string): Promise<void> {
+    await this.connection(tableName).where({ _id: id }).del();
   }
 }
 

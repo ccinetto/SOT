@@ -3,26 +3,10 @@ import { LibroI, newLibroI } from '../libros.interfaces';
 import { DbService } from '../../../services/db';
 
 class Libro {
-  private libros: LibroI[] = [
-    {
-      _id: '1234',
-      nombre: 'game of thrones',
-      precio: 2000,
-    },
-    {
-      _id: '12',
-      nombre: 'el señor de los anillos',
-      precio: 20,
-    },
-    {
-      _id: '123',
-      nombre: 'harry poter',
-      precio: 2000,
-    },
-  ];
+  private librosTable = 'libros';
 
   async getLibros(id: string | undefined = undefined): Promise<LibroI[]> {
-    return DbService.get('libros', id);
+    return DbService.get(this.librosTable, id);
   }
 
   async crearLibro(data: newLibroI): Promise<LibroI> {
@@ -31,27 +15,18 @@ class Libro {
       ...data,
     };
 
-    this.libros.push(newLibro);
+    await DbService.create(this.librosTable, newLibro);
 
     return newLibro;
   }
 
   async actualizarLibro(id: string, data: newLibroI): Promise<LibroI> {
-    const indice = this.libros.findIndex((unLibro) => unLibro._id === id);
-    console.log(`Indice ==> ${indice}`);
-
-    const oldLibro = this.libros[indice];
-
-    const newLibro = Object.assign(oldLibro, data);
-
-    this.libros.splice(indice, 1, newLibro);
-
-    return oldLibro;
+    const result = await DbService.update(this.librosTable, id, data);
+    return result;
   }
 
   async borrarLibro(id: string): Promise<void> {
-    const indice = this.libros.findIndex((unLibro) => unLibro._id === id);
-    this.libros.splice(indice, 1);
+    await DbService.delete(this.librosTable, id);
   }
 }
 

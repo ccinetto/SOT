@@ -8,7 +8,7 @@ class Libro {
   private tipo;
 
   constructor() {
-    this.tipo = TipoPersitencia.MYSQL;
+    this.tipo = TipoPersitencia.MONGO;
     this.libros = LibrosFactory.get(this.tipo);
   }
 

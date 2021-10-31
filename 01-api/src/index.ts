@@ -1,9 +1,10 @@
+import Config from './config';
 import myFancyWebServer from './services/server';
 import { DbService } from './services/db';
 
 const inicializar = async () => {
   await DbService.initDb();
-  myFancyWebServer.listen(8080, () => {
+  myFancyWebServer.listen(Config.PORT, () => {
     console.log('SERVER UP');
   });
 };
