@@ -1,18 +1,19 @@
 import Config from '../config';
 import * as mongoose from 'mongoose';
-import { LibroI, libroSchema } from 'src/models/books';
+import { ProductoI, productoSchema } from 'src/models/products';
 
 let connection: mongoose.Connection = null;
+
 class MongoDB {
   private uri: string;
-  private libroModel: mongoose.Model<LibroI>;
+  private productModel: mongoose.Model<ProductoI>;
 
   constructor() {
     this.uri = Config.MONGO_SRV;
-    this.libroModel;
   }
 
   async connect(): Promise<mongoose.Connection> {
+    console.log(connection);
     if (connection == null) {
       console.log('LLAMANDO A CONECTAR POR PRIMERA VEZ');
       connection = mongoose.createConnection(this.uri, {
@@ -27,10 +28,10 @@ class MongoDB {
   }
 
   async getModels() {
-    this.libroModel = connection.model<LibroI>('books', libroSchema);
+    this.productModel = connection.model<ProductoI>('books', productoSchema);
 
     return {
-      LibroModel: this.libroModel,
+      Product: this.productModel,
     };
   }
 

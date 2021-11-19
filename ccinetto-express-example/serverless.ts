@@ -1,12 +1,15 @@
 import type { AWS } from '@serverless/typescript';
 
-import hello from '@functions/hello';
-import { GetBooks } from '@functions/getBooks';
+import { api } from 'src/index';
 
 const serverlessConfiguration: AWS = {
-  service: 'mi-api-ccinetto',
+  service: 'ccinetto-express-example',
   frameworkVersion: '2',
-  plugins: ['serverless-esbuild', 'serverless-dotenv-plugin'],
+  plugins: [
+    'serverless-esbuild',
+    'serverless-offline',
+    'serverless-dotenv-plugin',
+  ],
   provider: {
     name: 'aws',
     runtime: 'nodejs14.x',
@@ -17,12 +20,13 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
+      NOMBRE: '${env:NOMBRE}',
       MONGO_SRV: '${env:MONGO_SRV}',
     },
     lambdaHashingVersion: '20201221',
   },
   // import the function via paths
-  functions: { hello, GetBooks },
+  functions: { api },
   package: { individually: true },
   custom: {
     esbuild: {
